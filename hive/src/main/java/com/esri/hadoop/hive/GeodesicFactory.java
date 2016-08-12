@@ -61,15 +61,15 @@ public class GeodesicFactory {
 		}
 		 
 		Polyline spike = new Polyline();
-		GeodesicLine directLine = Geodesic.WGS84.InverseLine(fromPoint.getY(), fromPoint.getX(), toPoint.getY(), toPoint.getX(), GeodesicMask.DISTANCE_IN | GeodesicMask.LATITUDE | GeodesicMask.LONGITUDE);
-		double distanceInMeters = directLine.Distance();
+		GeodesicLine inverseLine = Geodesic.WGS84.InverseLine(fromPoint.getY(), fromPoint.getX(), toPoint.getY(), toPoint.getX(), GeodesicMask.DISTANCE_IN | GeodesicMask.LATITUDE | GeodesicMask.LONGITUDE);
+		double distanceInMeters = inverseLine.Distance();
 		spike.startPath(fromPoint);
 		for (double distanceAlongSpike = DensifyInMeters; distanceAlongSpike + Epsilon < distanceInMeters; distanceAlongSpike+=DensifyInMeters) {
-			GeodesicData positionOnSpike = directLine.Position(distanceAlongSpike, GeodesicMask.LATITUDE | GeodesicMask.LONGITUDE);
+			GeodesicData positionOnSpike = inverseLine.Position(distanceAlongSpike, GeodesicMask.LATITUDE | GeodesicMask.LONGITUDE);
 			spike.lineTo(positionOnSpike.lon2, positionOnSpike.lat2);
 		}
-		GeodesicData positionOnSpike = directLine.Position(distanceInMeters, GeodesicMask.LATITUDE | GeodesicMask.LONGITUDE);
-		spike.lineTo(positionOnSpike.lon2, positionOnSpike.lat2);
+		
+		spike.lineTo(toPoint.getX(), toPoint.getY());
 		return spike;
 	}
 	
@@ -92,11 +92,12 @@ public class GeodesicFactory {
 		
 		Polygon wedge = new Polygon();
 		Polyline leftSpike = createSpike(fromPoint, leftBearingInDegree, distanceInMeters);
-		Point leftSpikeToPoint = null;
 		int leftSpikePointCount = leftSpike.getPointCount();
 		if (0 < leftSpikePointCount) {
 			wedge.add(leftSpike, false);
-			leftSpikeToPoint = leftSpike.getPoint(leftSpikePointCount - 1);
+		} else {
+			wedge.setEmpty();
+			return wedge;
 		}
 		
 		Polyline centerSpike = createSpike(fromPoint, bearingInDegree, distanceInMeters);
@@ -104,6 +105,10 @@ public class GeodesicFactory {
 		int centerSpikePointCount = centerSpike.getPointCount();
 		if (0 < centerSpikePointCount) {
 			centerSpikeToPoint = centerSpike.getPoint(centerSpikePointCount - 1);
+			wedge.lineTo(centerSpikeToPoint);
+		} else {
+			wedge.setEmpty();
+			return wedge;
 		}
 		
 		Polyline rightSpike = createSpike(fromPoint, rightBearingInDegree, distanceInMeters);
@@ -111,26 +116,14 @@ public class GeodesicFactory {
 		int rightSpikePointCount = rightSpike.getPointCount();
 		if (0 < rightSpikePointCount) {
 			rightSpikeToPoint = rightSpike.getPoint(rightSpikePointCount - 1);
+			wedge.lineTo(rightSpikeToPoint);
+			wedge.add(rightSpike, true);
+		} else {
+			wedge.setEmpty();
+			return wedge;
 		}
 		
-		if (null != leftSpikeToPoint && null != centerSpikeToPoint) {
-			Polyline leftToCenterSpike = createSpike(leftSpikeToPoint, centerSpikeToPoint);
-			int leftToCenterSpikePointCount = leftToCenterSpike.getPointCount();
-			if (0 < leftToCenterSpikePointCount) {
-				wedge.add(leftToCenterSpike, false);
-				Point leftToCenterToPoint = leftToCenterSpike.getPoint(leftToCenterSpikePointCount - 1);
-				
-				if (null != rightSpikeToPoint) {
-					Polyline centerToRightSpike = createSpike(leftToCenterToPoint, rightSpikeToPoint);
-					int centerToRightSpikePointCount = centerToRightSpike.getPointCount();
-					if (0 < centerToRightSpikePointCount) {
-						wedge.add(centerToRightSpike, false);
-					}
-					
-					wedge.add(rightSpike, true);
-				}
-			}
-		}
+		wedge.closeAllPaths();
 		return wedge;
 	}
 }
