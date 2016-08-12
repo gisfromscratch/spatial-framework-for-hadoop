@@ -103,7 +103,6 @@ public class GeodesicFactory {
 		Point centerSpikeToPoint = null;
 		int centerSpikePointCount = centerSpike.getPointCount();
 		if (0 < centerSpikePointCount) {
-			wedge.add(centerSpike, false);
 			centerSpikeToPoint = centerSpike.getPoint(centerSpikePointCount - 1);
 		}
 		
