@@ -32,7 +32,7 @@ public class GeodesicFactory {
 			throw new IllegalArgumentException("The distance in meters must not be less than 1E-5!");
 		}
 		
-		double azimuth = bearingInDegree / 180.0 * Math.PI;
+		double azimuth = bearingInDegree;
 		 
 		Polyline spike = new Polyline();
 		GeodesicLine directLine = Geodesic.WGS84.DirectLine(fromPoint.getY(), fromPoint.getX(), azimuth, distanceInMeters);
