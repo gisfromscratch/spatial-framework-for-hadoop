@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.hadoop.hive.serde2.io.DoubleWritable;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
 import org.junit.Test;
 
 import com.esri.core.geometry.Geometry;
@@ -23,10 +24,11 @@ public class TestStBearingLine {
 		final double latitude = 27.668196685574735;
 		final double longitude = -158.41586225679893;
 		final double bearing = 17.05277505911702;
-		final double distance = 229562.8;
+		final double distance = 123.95472310931031;
 			
 		ST_BearingLine bearingLine = new ST_BearingLine();
-		BytesWritable lineAsWritable = bearingLine.evaluate(new DoubleWritable(longitude), new DoubleWritable(latitude), new DoubleWritable(bearing), new DoubleWritable(distance));
+		Text linearUnit = new Text("NM");
+		BytesWritable lineAsWritable = bearingLine.evaluate(new DoubleWritable(longitude), new DoubleWritable(latitude), new DoubleWritable(bearing), new DoubleWritable(distance), linearUnit);
 		assertNotNull("The line writable must not be null!", lineAsWritable);
 		
 		OGCGeometry ogcGeometry = GeometryUtils.geometryFromEsriShape(lineAsWritable);
