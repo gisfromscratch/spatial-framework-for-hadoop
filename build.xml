@@ -14,10 +14,10 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac srcdir="hive/src/main/java" destdir="${dir.build}">
+		<javac srcdir="hive/src/main/java" destdir="${dir.build}" source="1.6" target="1.6">
 			<classpath refid="dependencies.class.path"/>	
 		</javac>
-		<javac srcdir="json/src/main/java" destdir="${dir.build}">
+		<javac srcdir="json/src/main/java" destdir="${dir.build}" source="1.6" target="1.6">
 			<classpath refid="dependencies.class.path"/>	
 		</javac>
 	</target>
