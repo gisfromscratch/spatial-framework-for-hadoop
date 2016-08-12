@@ -76,6 +76,7 @@
     <hive.version>0.12.0</hive.version>
     <jackson.version>1.8.8</jackson.version>
     <geometry.version>1.2</geometry.version>
+    <geographic.version>1.46</geographic.version>
     <junit.version>4.11</junit.version>
 
     <!-- Versions for plugins -->
@@ -138,6 +139,12 @@
         <groupId>com.esri.geometry</groupId>
         <artifactId>esri-geometry-api</artifactId>
         <version>${geometry.version}</version>
+      </dependency>
+      
+      <dependency>
+    	<groupId>net.sf.geographiclib</groupId>
+    	<artifactId>GeographicLib-Java</artifactId>
+    	<version>${geographic.version}</version>
       </dependency>
       
       <dependency>
